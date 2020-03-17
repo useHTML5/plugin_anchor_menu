@@ -1,0 +1,52 @@
+{% load i18n l10n sekizai_tags %}
+
+
+
+{% for anchor in anchors %}
+    <li class="nav-item anchor_menu_{{ menu_id }}">
+        <a href="#{{ anchor.slug }}"
+           class="nav-link">
+            {{ anchor.title }}
+        </a>
+    </li>
+{% endfor %}
+
+
+{% addtoblock "js" %}
+{#    {% if "ANCHOR_MENU_JQUERY_URL" %}#}
+{#        <script src="{{ ANCHOR_MENU_JQUERY_URL }}"></script>#}
+{#    {% endif %}#}
+    <script type="text/javascript">
+        {#$.noConflict();#}
+        jQuery(document).ready(function ($) {
+            {% if DEBUG %}console.log("loaded jQuery v" + $.fn.jquery + " loaded.");{% endif %}
+            var select_menu = $("#{{ menu_id }}");
+            $('.anchor_menu_{{ menu_id }} a').click(function (event) {
+                event.preventDefault();
+                var anchor = $(this).attr('href');
+                {% if DEBUG %}console.log("selected: '" + anchor + "'");{% endif %}
+                var offset = $(anchor).offset();
+                if (offset === undefined) {
+                    {% if DEBUG %}console.log("skip");{% endif %}
+                } else {
+                    {% if scroll_mode %}
+                        var offset_top = offset.top - {{ instance.top_offset_minus }};
+                        {% if DEBUG %}console.log("scroll to: " + offset_top);{% endif %}
+                        $(document).scrollTop(offset_top);
+                    {% else %}
+                        {% if DEBUG %}console.log("set href to: '" + anchor + "'");{% endif %}
+                        window.location.href = anchor;
+                    {% endif %}
+                }
+            });
+            {% if DEBUG %}
+                {% if scroll_mode %}
+                    console.log("use 'scroll' mode");
+                {% else %}
+                    console.log("use 'href' mode");
+                {% endif %}
+                console.log("init '" + select_menu.selector + "' done.");
+            {% endif %}
+        });
+    </script>
+{% endaddtoblock %}
