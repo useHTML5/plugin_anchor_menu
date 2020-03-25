@@ -38,7 +38,7 @@ class AnchorMenuPlugin(CMSPluginBase):
         anchors = AnchorPluginModel.objects.filter(
             placeholder__page=instance.page,
             # language=instance.language,
-        ).order_by('depth', 'path')
+        ).order_by('path')
         context.update({
             "menu_id": instance.menu_id,
             "scroll_mode": instance.scroll_mode,
