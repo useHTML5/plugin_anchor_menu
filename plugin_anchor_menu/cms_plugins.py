@@ -25,9 +25,6 @@ class AnchorPlugin(CMSPluginBase):
     prepopulated_fields = {"slug": ("title",)}
 
 
-assert AnchorPlugin.__name__ == plugin_anchor_menu_constants.ANCHOR_PLUGIN_NAME
-
-
 @plugin_pool.register_plugin
 class AnchorMenuPlugin(CMSPluginBase):
     """
@@ -38,10 +35,10 @@ class AnchorMenuPlugin(CMSPluginBase):
     render_template = app_settings.ANCHOR_MENU_TEMPLATE_MENU
 
     def render(self, context, instance, placeholder):
-        anchors = AnchorPluginModel.objects.all().filter(
+        anchors = AnchorPluginModel.objects.filter(
             placeholder__page=instance.page,
             # language=instance.language,
-        )
+        ).order_by('depth', 'path')
         context.update({
             "menu_id": instance.menu_id,
             "scroll_mode": instance.scroll_mode,
@@ -50,6 +47,3 @@ class AnchorMenuPlugin(CMSPluginBase):
             "DEBUG": settings.DEBUG,
         })
         return super().render(context, instance, placeholder)
-
-
-assert AnchorMenuPlugin.__name__ == plugin_anchor_menu_constants.DROP_DOWN_ANCHOR_MENU_PLUGIN_NAME
